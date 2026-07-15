@@ -1,4 +1,3 @@
-# Formula_Reference
 # Formula Reference
 
 A console application for instant calculation of physics, mathematics, and chemistry formulas.
