@@ -1,0 +1,662 @@
+using System;
+using System.Reflection;
+
+public class main_class
+{
+    public static void metode_start()
+    {
+        Console.WriteLine("Hello Welcome to my app!");
+        Console.WriteLine("This program is a tool for formula calculations.");
+        Console.WriteLine("The formulas in this program are divided into several parts.");
+        Console.WriteLine("Departments: Physics, Mathematics, Chemistry");
+        Console.BackgroundColor = ConsoleColor.Blue;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write("\r");
+        Segmentation();
+    }
+
+    public static void Segmentation()
+    {
+        while (true)
+        {
+            Console.WriteLine("\nEnter the name of the desired section (or 'Exit' to quit):");
+            string input_string = Console.ReadLine()?.Trim();
+            Console.Clear();
+
+            if (input_string?.ToLower() == "exit")
+            {
+                Console.WriteLine("Goodbye!");
+                return;
+            }
+
+            switch (input_string)
+            {
+                case "Physics":
+                    Console.Title = "Physics";
+                    class_PhysicsMain physics = new class_PhysicsMain();
+                    physics.metode_start();
+                    break;
+
+                case "Mathematics":
+                    Console.Title = "Mathematics";
+                    class_MathematicsMain math = new class_MathematicsMain();
+                    math.metode_start();
+                    break;
+
+                case "Chemistry":
+                    Console.Title = "Chemistry";
+                    class_ChemistryMain chem = new class_ChemistryMain();
+                    chem.metode_start();
+                    break;
+
+                default:
+                    Console.Beep(440, 2000);
+                    Console.WriteLine("You have a typo. Even capitalization matters.");
+                    Console.ReadKey(false);
+                    break;
+            }
+        }
+    }
+}
+
+// ==================== بخش فیزیک ====================
+public class class_PhysicsMain
+{
+    public void metode_start()
+    {
+        while (true)
+        {
+            Console.WriteLine("\nWhat do you want to do?");
+            Console.WriteLine("Choose one of these.");
+            Console.WriteLine("1. Formula calculations");
+            Console.WriteLine("2. View formulas");
+            Console.WriteLine("3. Exit to main menu");
+            string input = Console.ReadLine()?.Trim();
+
+            switch (input)
+            {
+                case "1":
+                case "Formula calculations":
+                    class_Physics_data_Formula physicsData = new class_Physics_data_Formula();
+                    physicsData.metde_Formula_calculations();
+                    break;
+                case "2":
+                case "View formulas":
+                    class_Physics_data_Formula.ViewAllFormulas();
+                    break;
+                case "3":
+                case "Exit":
+                    return;
+                default:
+                    Console.WriteLine("Invalid option. Try again.");
+                    break;
+            }
+        }
+    }
+}
+
+public class class_Physics_data_Formula
+{
+    public struct Formulas_physics
+    {
+        public const string F1 = "Q = m c ΔT (Heat)";
+        public const string F2 = "F = m a (Force)";
+        public const string F3 = "P = W / t (Power)";
+        public const string F4 = "E = m c² (Energy)";
+        public const string F5 = "v = u + a t (Velocity)";
+        public const string F6 = "s = u t + ½ a t² (Displacement)";
+        public const string F7 = "v² = u² + 2 a s (Velocity squared)";
+        public const string F8 = "F = G m₁m₂ / r² (Gravitational force)";
+        public const string F9 = "P = ρ g h (Fluid pressure)";
+        public const string F10 = "V = I R (Ohm's law)";
+    }
+
+    public static void ViewAllFormulas()
+    {
+        var fields = typeof(Formulas_physics).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+        Console.WriteLine("\nAll Physics Formulas:");
+        int i = 1;
+        foreach (var f in fields)
+            if (f.IsLiteral && f.FieldType == typeof(string))
+                Console.WriteLine($"{i++}. {f.GetValue(null)}");
+        Console.WriteLine();
+    }
+
+    public void metde_Formula_calculations()
+    {
+        Console.WriteLine("Type the formula name or part of it, or type 'view all formulas'.");
+        string search = Console.ReadLine()?.Trim();
+
+        if (search?.ToLower() == "view all formulas")
+        {
+            ViewAllFormulas();
+            return;
+        }
+
+        var fields = typeof(Formulas_physics).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+        bool found = false;
+
+        foreach (var field in fields)
+        {
+            if (field.IsLiteral && field.FieldType == typeof(string))
+            {
+                string formulaValue = field.GetValue(null)?.ToString();
+                if (!string.IsNullOrEmpty(formulaValue) && formulaValue.Contains(search, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"\nFormula found: {field.Name} = {formulaValue}");
+                    found = true;
+                    SolvePhysicsFormula(field.Name);
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+            Console.WriteLine("No formula found with this term.");
+        Console.WriteLine();
+    }
+
+    private void SolvePhysicsFormula(string formulaName)
+    {
+        Console.WriteLine("Enter the values. If a value is unknown, enter 0.");
+        double GetDouble(string prompt)
+        {
+            double val;
+            while (true)
+            {
+                Console.Write(prompt);
+                if (double.TryParse(Console.ReadLine(), out val))
+                    return val;
+                Console.WriteLine("Invalid input. Please enter a number.");
+            }
+        }
+
+        switch (formulaName)
+        {
+            case "F1": // Q = m c ΔT
+                double m = GetDouble("Enter m (mass): ");
+                double c = GetDouble("Enter c (specific heat): ");
+                double dT = GetDouble("Enter ΔT (temperature change): ");
+                Console.WriteLine($"\nResult: Q = {m} × {c} × {dT} = {m * c * dT} Joules");
+                break;
+
+            case "F2": // F = m a
+                double mass = GetDouble("Enter m (mass): ");
+                double acc = GetDouble("Enter a (acceleration): ");
+                Console.WriteLine($"\nResult: F = {mass} × {acc} = {mass * acc} Newtons");
+                break;
+
+            case "F3": // P = W / t
+                double W = GetDouble("Enter W (work): ");
+                double t = GetDouble("Enter t (time): ");
+                Console.WriteLine($"\nResult: P = {W} / {t} = {W / t} Watts");
+                break;
+
+            case "F4": // E = m c²
+                double m2 = GetDouble("Enter m (mass): ");
+                Console.WriteLine($"\nResult: E = {m2} × 9e16 = {m2 * 9e16} Joules");
+                break;
+
+            case "F5": // v = u + at
+                double u = GetDouble("Enter u (initial velocity): ");
+                double a = GetDouble("Enter a (acceleration): ");
+                double t2 = GetDouble("Enter t (time): ");
+                Console.WriteLine($"\nResult: v = {u} + {a} × {t2} = {u + a * t2} m/s");
+                break;
+
+            case "F6": // s = ut + ½at²
+                double u2 = GetDouble("Enter u (initial velocity): ");
+                double a2 = GetDouble("Enter a (acceleration): ");
+                double t3 = GetDouble("Enter t (time): ");
+                Console.WriteLine($"\nResult: s = {u2}×{t3} + ½×{a2}×{t3}² = {u2 * t3 + 0.5 * a2 * t3 * t3} m");
+                break;
+
+            case "F7": // v² = u² + 2as
+                double u3 = GetDouble("Enter u (initial velocity): ");
+                double a3 = GetDouble("Enter a (acceleration): ");
+                double s = GetDouble("Enter s (displacement): ");
+                double v2 = u3 * u3 + 2 * a3 * s;
+                Console.WriteLine($"\nResult: v² = {u3}² + 2×{a3}×{s} = {v2} → v = {Math.Sqrt(v2)} m/s");
+                break;
+
+            case "F8": // F = G m₁m₂ / r²
+                double G = 6.674e-11;
+                double m1 = GetDouble("Enter m1 (mass 1): ");
+                double m2b = GetDouble("Enter m2 (mass 2): ");
+                double r = GetDouble("Enter r (distance): ");
+                double F = G * m1 * m2b / (r * r);
+                Console.WriteLine($"\nResult: F = {G} × {m1} × {m2b} / {r}² = {F} N");
+                break;
+
+            case "F9": // P = ρ g h
+                double rho = GetDouble("Enter ρ (density): ");
+                double g = GetDouble("Enter g (gravity, default 9.8): ");
+                double h = GetDouble("Enter h (height): ");
+                Console.WriteLine($"\nResult: P = {rho} × {g} × {h} = {rho * g * h} Pa");
+                break;
+
+            case "F10": // V = IR
+                double I = GetDouble("Enter I (current): ");
+                double R = GetDouble("Enter R (resistance): ");
+                Console.WriteLine($"\nResult: V = {I} × {R} = {I * R} Volts");
+                break;
+
+            default:
+                Console.WriteLine("Calculation for this formula is not implemented yet.");
+                break;
+        }
+    }
+}
+
+// ==================== بخش ریاضی ====================
+public class class_MathematicsMain
+{
+    public void metode_start()
+    {
+        while (true)
+        {
+            Console.WriteLine("\nWhat do you want to do?");
+            Console.WriteLine("Choose one of these.");
+            Console.WriteLine("1. Formula calculations");
+            Console.WriteLine("2. View formulas");
+            Console.WriteLine("3. Exit to main menu");
+            string input = Console.ReadLine()?.Trim();
+
+            switch (input)
+            {
+                case "1":
+                case "Formula calculations":
+                    class_Mathematics_data_Formula mathData = new class_Mathematics_data_Formula();
+                    mathData.metde_Formula_calculations();
+                    break;
+                case "2":
+                case "View formulas":
+                    class_Mathematics_data_Formula.ViewAllFormulas();
+                    break;
+                case "3":
+                case "Exit":
+                    return;
+                default:
+                    Console.WriteLine("Invalid option. Try again.");
+                    break;
+            }
+        }
+    }
+}
+
+public class class_Mathematics_data_Formula
+{
+    public struct Formulas_mathematics
+    {
+        public const string M1 = "Area of circle = π r²";
+        public const string M2 = "Pythagorean theorem: a² + b² = c²";
+        public const string M3 = "Quadratic: ax² + bx + c = 0";
+        public const string M4 = "Volume of sphere = (4/3)π r³";
+        public const string M5 = "Area of triangle = ½ × base × height";
+        public const string M6 = "Circumference of circle = 2πr";
+        public const string M7 = "Area of rectangle = length × width";
+        public const string M8 = "Volume of cylinder = π r² h";
+        public const string M9 = "Area of trapezoid = ½(a+b)h";
+        public const string M10 = "n! (Factorial)";
+    }
+
+    public static void ViewAllFormulas()
+    {
+        var fields = typeof(Formulas_mathematics).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+        Console.WriteLine("\nAll Mathematics Formulas:");
+        int i = 1;
+        foreach (var f in fields)
+            if (f.IsLiteral && f.FieldType == typeof(string))
+                Console.WriteLine($"{i++}. {f.GetValue(null)}");
+        Console.WriteLine();
+    }
+
+    public void metde_Formula_calculations()
+    {
+        Console.WriteLine("Type the formula name or part of it, or type 'view all formulas'.");
+        string search = Console.ReadLine()?.Trim();
+
+        if (search?.ToLower() == "view all formulas")
+        {
+            ViewAllFormulas();
+            return;
+        }
+
+        var fields = typeof(Formulas_mathematics).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+        bool found = false;
+
+        foreach (var field in fields)
+        {
+            if (field.IsLiteral && field.FieldType == typeof(string))
+            {
+                string formulaValue = field.GetValue(null)?.ToString();
+                if (!string.IsNullOrEmpty(formulaValue) && formulaValue.Contains(search, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"\nFormula found: {field.Name} = {formulaValue}");
+                    found = true;
+                    SolveMathematicsFormula(field.Name);
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+            Console.WriteLine("No formula found with this term.");
+        Console.WriteLine();
+    }
+
+    private void SolveMathematicsFormula(string formulaName)
+    {
+        Console.WriteLine("Enter the values. If a value is unknown, enter 0.");
+        double GetDouble(string prompt)
+        {
+            double val;
+            while (true)
+            {
+                Console.Write(prompt);
+                if (double.TryParse(Console.ReadLine(), out val))
+                    return val;
+                Console.WriteLine("Invalid input. Please enter a number.");
+            }
+        }
+        int GetInt(string prompt)
+        {
+            int val;
+            while (true)
+            {
+                Console.Write(prompt);
+                if (int.TryParse(Console.ReadLine(), out val) && val >= 0)
+                    return val;
+                Console.WriteLine("Invalid input. Please enter a non-negative integer.");
+            }
+        }
+
+        switch (formulaName)
+        {
+            case "M1": // Area of circle
+                double r = GetDouble("Enter radius (r): ");
+                Console.WriteLine($"\nResult: Area = π × {r}² = {Math.PI * r * r}");
+                break;
+
+            case "M2": // Pythagorean
+                double a = GetDouble("Enter side a: ");
+                double b = GetDouble("Enter side b: ");
+                Console.WriteLine($"\nResult: c = √({a}² + {b}²) = {Math.Sqrt(a * a + b * b)}");
+                break;
+
+            case "M3": // Quadratic
+                double aq = GetDouble("Enter a: ");
+                double bq = GetDouble("Enter b: ");
+                double cq = GetDouble("Enter c: ");
+                double delta = bq * bq - 4 * aq * cq;
+                if (delta < 0)
+                    Console.WriteLine("No real roots.");
+                else
+                {
+                    double x1 = (-bq + Math.Sqrt(delta)) / (2 * aq);
+                    double x2 = (-bq - Math.Sqrt(delta)) / (2 * aq);
+                    Console.WriteLine($"\nResult: x1 = {x1}, x2 = {x2}");
+                }
+                break;
+
+            case "M4": // Volume of sphere
+                double r2 = GetDouble("Enter radius (r): ");
+                Console.WriteLine($"\nResult: Volume = (4/3)π × {r2}³ = {(4.0 / 3.0) * Math.PI * Math.Pow(r2, 3)}");
+                break;
+
+            case "M5": // Area of triangle
+                double baseLen = GetDouble("Enter base: ");
+                double height = GetDouble("Enter height: ");
+                Console.WriteLine($"\nResult: Area = ½ × {baseLen} × {height} = {0.5 * baseLen * height}");
+                break;
+
+            case "M6": // Circumference
+                double r3 = GetDouble("Enter radius (r): ");
+                Console.WriteLine($"\nResult: Circumference = 2π × {r3} = {2 * Math.PI * r3}");
+                break;
+
+            case "M7": // Area of rectangle
+                double len = GetDouble("Enter length: ");
+                double wid = GetDouble("Enter width: ");
+                Console.WriteLine($"\nResult: Area = {len} × {wid} = {len * wid}");
+                break;
+
+            case "M8": // Volume of cylinder
+                double r4 = GetDouble("Enter radius (r): ");
+                double h = GetDouble("Enter height (h): ");
+                Console.WriteLine($"\nResult: Volume = π × {r4}² × {h} = {Math.PI * r4 * r4 * h}");
+                break;
+
+            case "M9": // Area of trapezoid
+                double a2 = GetDouble("Enter side a: ");
+                double b2 = GetDouble("Enter side b: ");
+                double h2 = GetDouble("Enter height (h): ");
+                Console.WriteLine($"\nResult: Area = ½({a2}+{b2})×{h2} = {0.5 * (a2 + b2) * h2}");
+                break;
+
+            case "M10": // Factorial
+                int n = GetInt("Enter n (non-negative): ");
+                long fact = 1;
+                for (int i = 1; i <= n; i++) fact *= i;
+                Console.WriteLine($"\nResult: {n}! = {fact}");
+                break;
+
+            default:
+                Console.WriteLine("Calculation for this formula is not implemented yet.");
+                break;
+        }
+    }
+}
+
+// ==================== بخش شیمی ====================
+public class class_ChemistryMain
+{
+    public void metode_start()
+    {
+        while (true)
+        {
+            Console.WriteLine("\nWhat do you want to do?");
+            Console.WriteLine("Choose one of these.");
+            Console.WriteLine("1. Formula calculations");
+            Console.WriteLine("2. View formulas");
+            Console.WriteLine("3. Exit to main menu");
+            string input = Console.ReadLine()?.Trim();
+
+            switch (input)
+            {
+                case "1":
+                case "Formula calculations":
+                    class_Chemistry_data_Formula chemData = new class_Chemistry_data_Formula();
+                    chemData.metde_Formula_calculations();
+                    break;
+                case "2":
+                case "View formulas":
+                    class_Chemistry_data_Formula.ViewAllFormulas();
+                    break;
+                case "3":
+                case "Exit":
+                    return;
+                default:
+                    Console.WriteLine("Invalid option. Try again.");
+                    break;
+            }
+        }
+    }
+}
+
+public class class_Chemistry_data_Formula
+{
+    public struct Formulas_chemistry
+    {
+        public const string C1 = "Molarity: M = n / V";
+        public const string C2 = "Ideal gas: PV = nRT";
+        public const string C3 = "pH = -log[H+]";
+        public const string C4 = "Density: ρ = m / V";
+        public const string C5 = "Mass percent = (mass solute / mass solution) × 100";
+        public const string C6 = "ppm = (mass solute / mass solution) × 10⁶";
+        public const string C7 = "Reaction rate = Δ[A] / Δt";
+        public const string C8 = "Equilibrium constant Kc = [C]^c [D]^d / [A]^a [B]^b";
+        public const string C9 = "Raoult's law: P_solution = X_solvent × P°_solvent";
+        public const string C10 = "Enthalpy change: ΔH = H_products - H_reactants";
+    }
+
+    public static void ViewAllFormulas()
+    {
+        var fields = typeof(Formulas_chemistry).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+        Console.WriteLine("\nAll Chemistry Formulas:");
+        int i = 1;
+        foreach (var f in fields)
+            if (f.IsLiteral && f.FieldType == typeof(string))
+                Console.WriteLine($"{i++}. {f.GetValue(null)}");
+        Console.WriteLine();
+    }
+
+    public void metde_Formula_calculations()
+    {
+        Console.WriteLine("Type the formula name or part of it, or type 'view all formulas'.");
+        string search = Console.ReadLine()?.Trim();
+
+        if (search?.ToLower() == "view all formulas")
+        {
+            ViewAllFormulas();
+            return;
+        }
+
+        var fields = typeof(Formulas_chemistry).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+        bool found = false;
+
+        foreach (var field in fields)
+        {
+            if (field.IsLiteral && field.FieldType == typeof(string))
+            {
+                string formulaValue = field.GetValue(null)?.ToString();
+                if (!string.IsNullOrEmpty(formulaValue) && formulaValue.Contains(search, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"\nFormula found: {field.Name} = {formulaValue}");
+                    found = true;
+                    SolveChemistryFormula(field.Name);
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+            Console.WriteLine("No formula found with this term.");
+        Console.WriteLine();
+    }
+
+    private void SolveChemistryFormula(string formulaName)
+    {
+        Console.WriteLine("Enter the values. If a value is unknown, enter 0.");
+        double GetDouble(string prompt)
+        {
+            double val;
+            while (true)
+            {
+                Console.Write(prompt);
+                if (double.TryParse(Console.ReadLine(), out val))
+                    return val;
+                Console.WriteLine("Invalid input. Please enter a number.");
+            }
+        }
+
+        switch (formulaName)
+        {
+            case "C1": // M = n / V
+                double n = GetDouble("Enter n (moles): ");
+                double V = GetDouble("Enter V (volume in liters): ");
+                Console.WriteLine($"\nResult: M = {n} / {V} = {n / V} mol/L");
+                break;
+
+            case "C2": // PV = nRT
+                double P = GetDouble("Enter P (pressure in atm, 0 if unknown): ");
+                double V2 = GetDouble("Enter V (volume in L, 0 if unknown): ");
+                double n2 = GetDouble("Enter n (moles, 0 if unknown): ");
+                double T = GetDouble("Enter T (temperature in K, 0 if unknown): ");
+                double R = 0.0821;
+                if (P == 0)
+                {
+                    P = n2 * R * T / V2;
+                    Console.WriteLine($"\nResult: P = {n2}×0.0821×{T} / {V2} = {P} atm");
+                }
+                else if (V2 == 0)
+                {
+                    V2 = n2 * R * T / P;
+                    Console.WriteLine($"\nResult: V = {n2}×0.0821×{T} / {P} = {V2} L");
+                }
+                else if (n2 == 0)
+                {
+                    n2 = P * V2 / (R * T);
+                    Console.WriteLine($"\nResult: n = {P}×{V2} / (0.0821×{T}) = {n2} mol");
+                }
+                else if (T == 0)
+                {
+                    T = P * V2 / (n2 * R);
+                    Console.WriteLine($"\nResult: T = {P}×{V2} / ({n2}×0.0821) = {T} K");
+                }
+                else
+                    Console.WriteLine("All values given. No unknown to solve.");
+                break;
+
+            case "C3": // pH = -log[H+]
+                double H = GetDouble("Enter [H+] concentration: ");
+                Console.WriteLine($"\nResult: pH = -log({H}) = {-Math.Log10(H)}");
+                break;
+
+            case "C4": // ρ = m / V
+                double mass = GetDouble("Enter m (mass in grams): ");
+                double vol = GetDouble("Enter V (volume in cm³): ");
+                Console.WriteLine($"\nResult: ρ = {mass} / {vol} = {mass / vol} g/cm³");
+                break;
+
+            case "C5": // Mass percent
+                double solute = GetDouble("Enter mass of solute: ");
+                double solution = GetDouble("Enter mass of solution: ");
+                Console.WriteLine($"\nResult: Mass % = ({solute}/{solution})×100 = {(solute / solution) * 100} %");
+                break;
+
+            case "C6": // ppm
+                double solute2 = GetDouble("Enter mass of solute: ");
+                double solution2 = GetDouble("Enter mass of solution: ");
+                Console.WriteLine($"\nResult: ppm = ({solute2}/{solution2})×10⁶ = {(solute2 / solution2) * 1e6} ppm");
+                break;
+
+            case "C7": // Reaction rate
+                double deltaA = GetDouble("Enter Δ[A] (change in concentration): ");
+                double deltaT = GetDouble("Enter Δt (time change): ");
+                Console.WriteLine($"\nResult: Rate = {deltaA} / {deltaT} = {deltaA / deltaT} M/s");
+                break;
+
+            case "C8": // Equilibrium constant (simplified example)
+                Console.WriteLine("Assuming reaction: aA + bB ⇌ cC + dD");
+                double aConc = GetDouble("Enter [A] (M): ");
+                double bConc = GetDouble("Enter [B] (M): ");
+                double cConc = GetDouble("Enter [C] (M): ");
+                double dConc = GetDouble("Enter [D] (M): ");
+                double aCoeff = GetDouble("Enter coefficient a: ");
+                double bCoeff = GetDouble("Enter coefficient b: ");
+                double cCoeff = GetDouble("Enter coefficient c: ");
+                double dCoeff = GetDouble("Enter coefficient d: ");
+                double Kc = (Math.Pow(cConc, cCoeff) * Math.Pow(dConc, dCoeff)) /
+                            (Math.Pow(aConc, aCoeff) * Math.Pow(bConc, bCoeff));
+                Console.WriteLine($"\nResult: Kc = {Kc}");
+                break;
+
+            case "C9": // Raoult's law
+                double Xsolvent = GetDouble("Enter X_solvent (mole fraction of solvent): ");
+                double P0 = GetDouble("Enter P°_solvent (pure solvent vapor pressure): ");
+                Console.WriteLine($"\nResult: P_solution = {Xsolvent} × {P0} = {Xsolvent * P0} atm");
+                break;
+
+            case "C10": // Enthalpy change
+                double Hprod = GetDouble("Enter H_products (total enthalpy of products): ");
+                double Hreact = GetDouble("Enter H_reactants (total enthalpy of reactants): ");
+                Console.WriteLine($"\nResult: ΔH = {Hprod} - {Hreact} = {Hprod - Hreact} kJ");
+                break;
+
+            default:
+                Console.WriteLine("Calculation for this formula is not implemented yet.");
+                break;
+        }
+    }
+}
